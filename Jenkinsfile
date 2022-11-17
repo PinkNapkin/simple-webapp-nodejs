@@ -17,5 +17,10 @@ pipeline {
                 sh "docker images"
             }
         }
+        stage('Deploy'){
+            steps{
+                sh "docker run -itd --name nodewebapp -p 3000:3000 nodewebapp:latest &"
+            }
+        }
     }
 }
