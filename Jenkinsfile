@@ -1,35 +1,28 @@
 pipeline {
     agent any
-
     stages {
-        stage('Clean Workspace'){
-            steps{
+        stage("Initialize") {
+            steps {
                 cleanWs()
             }
         }
-        
-        stage('Clone') {
+        stage('Get SCM') {
             steps {
                 git "https://github.com/PinkNapkin/simple-webapp-nodejs.git"
             }
         }
-        
-        stage('Build'){
-            steps{
-                nodejs('nodejs16') {
-                    sh "npm install"
-                }
+        stage('Build') {
+            steps {
+                sh "docker build -t nodewebapp ."
+                sh "docker images"
             }
         }
-        
-        stage('Test'){
-            steps
-            {
-                nodejs('nodejs16') {
-                    sh "npm test"
-                }
+        stage('Deploy') {
+            steps {
+                sh "docker kill nodewebapp"
+                sh "docker rm nodewebapp"
+                sh "docker run -itd --name nodewebapp -p 8081:3000 nodewebapp:latest &"
             }
-            
         }
     }
 }
